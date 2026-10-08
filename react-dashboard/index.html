@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus - React Analytics &amp; Telemetry Engine</title>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- React 18 & Babel Standalone -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root,
+        [data-theme="sandal"] {
+            --bg-main: radial-gradient(circle at 10% 10%, rgba(238, 220, 192, 0.65) 0%, transparent 55%),
+                       radial-gradient(circle at 90% 85%, rgba(226, 201, 165, 0.50) 0%, transparent 55%),
+                       #f8f3e8;
+            --bg-card: #ffffff;
+            --border-card: #e0d4be;
+            --text-primary: #1c150c;
+            --text-secondary: #4a3c2c;
+            --card-hover-shadow: rgba(180, 120, 40, 0.25);
+        }
+        [data-theme="midnight"] {
+            --bg-main: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.25) 0%, transparent 45%),
+                       radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.22) 0%, transparent 45%),
+                       radial-gradient(circle at 50% 50%, #0b1329 0%, #040814 100%);
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --border-card: rgba(255, 255, 255, 0.09);
+            --text-primary: #ffffff;
+            --text-secondary: #e2e8f0;
+            --card-hover-shadow: rgba(99, 102, 241, 0.35);
+        }
+        [data-theme="sapphire"] {
+            --bg-main: radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.35) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.28) 0%, transparent 45%),
+                       radial-gradient(circle at 50% 50%, #0a1e3f 0%, #030d1d 100%);
+            --bg-card: rgba(12, 33, 68, 0.90);
+            --border-card: rgba(56, 189, 248, 0.25);
+            --text-primary: #ffffff;
+            --text-secondary: #bae6fd;
+            --card-hover-shadow: rgba(56, 189, 248, 0.4);
+        }
+        [data-theme="emerald"] {
+            --bg-main: radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.32) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.28) 0%, transparent 45%),
+                       radial-gradient(circle at 50% 50%, #042524 0%, #011413 100%);
+            --bg-card: rgba(6, 38, 36, 0.90);
+            --border-card: rgba(16, 185, 129, 0.25);
+            --text-primary: #ffffff;
+            --text-secondary: #a7f3d0;
+            --card-hover-shadow: rgba(16, 185, 129, 0.4);
+        }
+        [data-theme="purple"] {
+            --bg-main: radial-gradient(circle at 15% 15%, rgba(168, 85, 247, 0.35) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.28) 0%, transparent 45%),
+                       radial-gradient(circle at 50% 50%, #200f37 0%, #0c0419 100%);
+            --bg-card: rgba(36, 17, 63, 0.90);
+            --border-card: rgba(168, 85, 247, 0.25);
+            --text-primary: #ffffff;
+            --text-secondary: #e9d5ff;
+            --card-hover-shadow: rgba(168, 85, 247, 0.4);
+        }
+        [data-theme="sunset"] {
+            --bg-main: radial-gradient(circle at 15% 15%, rgba(244, 63, 94, 0.32) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.28) 0%, transparent 45%),
+                       radial-gradient(circle at 50% 50%, #290d16 0%, #130409 100%);
+            --bg-card: rgba(45, 16, 26, 0.90);
+            --border-card: rgba(244, 63, 94, 0.25);
+            --text-primary: #ffffff;
+            --text-secondary: #fecdd3;
+            --card-hover-shadow: rgba(244, 63, 94, 0.4);
+        }
+        [data-theme="oled"] {
+            --bg-main: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.07) 0%, transparent 40%),
+                       radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 40%),
+                       #000000;
+            --bg-card: rgba(18, 18, 22, 0.95);
+            --border-card: rgba(255, 255, 255, 0.12);
+            --text-primary: #ffffff;
+            --text-secondary: #f3f4f6;
+            --card-hover-shadow: rgba(0, 242, 254, 0.3);
+        }
+        [data-theme="light"] {
+            --bg-main: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
+                       radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.14) 0px, transparent 50%),
+                       #f8fafc;
+            --bg-card: #ffffff;
+            --border-card: rgba(203, 213, 225, 0.85);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --card-hover-shadow: rgba(15, 23, 42, 0.1);
+        }
+
+        body { 
+            background: var(--bg-main) !important;
+            background-attachment: fixed !important;
+            color: var(--text-primary, #1c150c); 
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            min-height: 100vh;
+            transition: background 0.4s ease;
+        }
+        .glass-card { 
+            background: var(--bg-card, #ffffff) !important; 
+            backdrop-filter: blur(16px); 
+            border: 1px solid var(--border-card, #e0d4be) !important; 
+            border-radius: 18px; 
+            box-shadow: 0 10px 30px -6px rgba(120, 95, 60, 0.10);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.4s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px -8px var(--card-hover-shadow, rgba(180, 120, 40, 0.22));
+        }
+        .chart-container { position: relative; height: 320px; width: 100%; }
+        .gradient-text {
+            background: linear-gradient(135deg, #b47828 0%, #8c581a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-badge {
+            box-shadow: 0 0 15px rgba(180, 120, 40, 0.4);
+        }
+
+        .theme-swatch-circle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .swatch-sandal   { background: linear-gradient(135deg, #d8bc93, #b47828); border-color: #c49a62 !important; }
+        .swatch-midnight { background: linear-gradient(135deg, #6366f1, #0ea5e9); }
+        .swatch-sapphire { background: linear-gradient(135deg, #2563eb, #38bdf8); }
+        .swatch-emerald  { background: linear-gradient(135deg, #10b981, #06b6d4); }
+        .swatch-purple   { background: linear-gradient(135deg, #a855f7, #ec4899); }
+        .swatch-sunset   { background: linear-gradient(135deg, #f43f5e, #f59e0b); }
+        .swatch-oled     { background: linear-gradient(135deg, #1f2937, #00f2fe); }
+        .swatch-light    { background: linear-gradient(135deg, #f8fafc, #93c5fd); border-color: #cbd5e1; }
+
+        .theme-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            color: #1c150c;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .theme-dropdown-item:hover {
+            background: rgba(180, 120, 40, 0.12);
+        }
+
+        /* Sandalwood overrides */
+        [data-theme="sandal"] .text-white { color: #1c150c !important; }
+        [data-theme="sandal"] .text-white-50 { color: #786650 !important; }
+        [data-theme="sandal"] .dropdown-menu-dark {
+            background-color: #ffffff !important;
+            border-color: #dfd3bd !important;
+            color: #1c150c !important;
+        }
+        [data-theme="sandal"] .theme-dropdown-item {
+            color: #1c150c !important;
+        }
+        [data-theme="sandal"] .btn-dark {
+            background-color: #efe7d7 !important;
+            border-color: #dfd3bd !important;
+            color: #1c150c !important;
+        }
+        [data-theme="sandal"] .btn-outline-light {
+            border-color: #dfd3bd !important;
+            color: #4a3c2c !important;
+        }
+        [data-theme="sandal"] .btn-outline-light:hover {
+            background-color: #ede3ce !important;
+            color: #1c150c !important;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        (function() {
+            try {
+                const saved = localStorage.getItem('smart_campus_theme') || 'sandal';
+                document.documentElement.setAttribute('data-theme', saved);
+            } catch(e) {}
+        })();
+    </script>
+
+<div id="root"></div>
+
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Stat Metric Card Component
+    function StatCard({ title, value, icon, colorGradient, subtitle, badge }) {
+        return (
+            <div className="col-sm-6 col-xl-3">
+                <div className="glass-card p-4 h-100">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="text-white-50 small fw-semibold">{title}</span>
+                        <div className="p-3 rounded-4" style={{ background: colorGradient, boxShadow: '0 8px 16px rgba(0,0,0,0.2)' }}>
+                            <i className={`bi bi-${icon} fs-5 text-white`}></i>
+                        </div>
+                    </div>
+                    <h3 className="fw-bold mb-1 mt-2 text-white">{value}</h3>
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                        <span className="small text-white-50">{subtitle}</span>
+                        {badge && <span className="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 px-2 py-1">{badge}</span>}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Main App Component
+    function App() {
+        const [studentData, setStudentData] = useState(null);
+        const [isLive, setIsLive] = useState(false);
+        const [loading, setLoading] = useState(true);
+        const attChartRef = useRef(null);
+        const marksChartRef = useRef(null);
+
+        // Smart Navigation Helpers
+        const goToPortal = () => {
+            if (window.location.port !== '8000' && window.location.port !== '') {
+                window.location.href = 'http://localhost:8000/frontend/pages/student-dashboard.php';
+            } else {
+                window.location.href = '../frontend/pages/student-dashboard.php';
+            }
+        };
+
+        const handleLogout = () => {
+            if (window.location.port !== '8000' && window.location.port !== '') {
+                window.location.href = 'http://localhost:8000/backend/auth/logout.php';
+            } else {
+                window.location.href = '../../backend/auth/logout.php';
+            }
+        };
+
+        const loadAnalytics = async () => {
+            setLoading(true);
+            const endpoints = [
+                'http://localhost:8000/backend/student/api_student_data.php',
+                '../backend/student/api_student_data.php',
+                'http://localhost/Smart%20Management%20System/backend/student/api_student_data.php'
+            ];
+
+            let loaded = false;
+            for (const url of endpoints) {
+                try {
+                    const res = await fetch(url, { cache: 'no-cache' });
+                    if (res.ok) {
+                        const result = await res.json();
+                        if (result.status === 'success' && result.data && result.data.student) {
+                            setStudentData(result.data);
+                            setIsLive(true);
+                            loaded = true;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    // Try next endpoint
+                }
+            }
+
+            if (!loaded) {
+                // Fallback realistic demo state
+                setStudentData({
+                    student: { name: "Aakash Sharma", register_no: "21CS101", department: "Computer Science", year: "3rd Year" },
+                    attendance: [
+                        { subject_name: "Web Programming", percentage: 91.8, conducted: 22, present: 20 },
+                        { subject_name: "Database Systems", percentage: 88.0, conducted: 20, present: 18 },
+                        { subject_name: "Computer Networks", percentage: 85.0, conducted: 20, present: 17 },
+                        { subject_name: "Operating Systems", percentage: 82.0, conducted: 22, present: 18 },
+                        { subject_name: "Automata Theory", percentage: 59.1, conducted: 22, present: 13 }
+                    ],
+                    marks: [
+                        { subject_name: "Web Programming", percentage: 91.8, earned_marks: 183.6, max_marks: 200 },
+                        { subject_name: "Database Systems", percentage: 85.0, earned_marks: 170.0, max_marks: 200 },
+                        { subject_name: "Computer Networks", percentage: 81.0, earned_marks: 162.0, max_marks: 200 },
+                        { subject_name: "Operating Systems", percentage: 76.0, earned_marks: 152.0, max_marks: 200 },
+                        { subject_name: "Automata Theory", percentage: 61.1, earned_marks: 122.2, max_marks: 200 }
+                    ],
+                    stats: {
+                        overall_attendance: 87.1,
+                        attendance_status: "Good",
+                        average_marks: 79.2,
+                        overall_grade: "A (Excellent)",
+                        pending_assignments: 3,
+                        best_subject: "Web Programming (91.8%)",
+                        weakest_subject: "Automata Theory (61.1%)",
+                        completed_course_hours_all: 140,
+                        total_course_hours_all: 507,
+                        course_progress_percentage: 27.6,
+                        is_at_risk: true,
+                        risk_level: "Moderate Warning",
+                        warnings: [
+                            "Attendance in Automata Theory (59.1%) is below the mandatory 75% threshold.",
+                            "You have 3 pending course assignments approaching deadlines."
+                        ],
+                        recommendations: [
+                            "Attend the next 14 consecutive sessions in Automata Theory to recover attendance above 75%.",
+                            "Complete and submit high-priority course assignments to secure continuous internal assessment scores."
+                        ]
+                    }
+                });
+                setIsLive(false);
+            }
+            setLoading(false);
+        };
+
+        useEffect(() => {
+            loadAnalytics();
+        }, []);
+
+        useEffect(() => {
+            if (!studentData || !studentData.attendance || !studentData.marks) return;
+
+            if (attChartRef.current) attChartRef.current.destroy();
+            if (marksChartRef.current) marksChartRef.current.destroy();
+
+            // 1. Attendance Chart
+            const attCtx = document.getElementById('attendanceCanvas');
+            if (attCtx) {
+                const labels = studentData.attendance.map(a => a.subject_name);
+                const dataValues = studentData.attendance.map(a => a.percentage);
+                const colors = dataValues.map(v => v >= 75 ? 'rgba(37, 99, 235, 0.85)' : 'rgba(239, 68, 68, 0.85)');
+
+                attChartRef.current = new Chart(attCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Attendance %',
+                            data: dataValues,
+                            backgroundColor: colors,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: (ctx) => ` Attendance: ${ctx.parsed.y}%` } }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8' } },
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                        }
+                    }
+                });
+            }
+
+            // 2. Marks Distribution Chart
+            const marksCtx = document.getElementById('marksCanvas');
+            if (marksCtx) {
+                const mLabels = studentData.marks.map(m => m.subject_name);
+                const scoreValues = studentData.marks.map(m => m.percentage);
+                const colors = scoreValues.map(v => v >= 75 ? 'rgba(16, 185, 129, 0.85)' : (v >= 50 ? 'rgba(99, 102, 241, 0.85)' : 'rgba(245, 158, 11, 0.85)'));
+
+                marksChartRef.current = new Chart(marksCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: mLabels,
+                        datasets: [{
+                            label: 'Academic Score %',
+                            data: scoreValues,
+                            backgroundColor: colors,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: (ctx) => ` Academic Score: ${ctx.parsed.y}%` } }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8' } },
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                        }
+                    }
+                });
+            }
+
+            return () => {
+                if (attChartRef.current) attChartRef.current.destroy();
+                if (marksChartRef.current) marksChartRef.current.destroy();
+            };
+        }, [studentData, loading]);
+
+        if (loading) {
+            return (
+                <div className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+                    <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }} role="status"></div>
+                    <span className="text-white-50">Initializing React Analytics Engine...</span>
+                </div>
+            );
+        }
+
+        const student = studentData.student;
+        const stats = studentData.stats;
+
+        const switchTheme = (themeName) => {
+            document.documentElement.setAttribute('data-theme', themeName);
+            try {
+                localStorage.setItem('smart_campus_theme', themeName);
+            } catch(e) {}
+        };
+
+        return (
+            <div className="container-fluid py-4 px-lg-5">
+                {/* Header Bar */}
+                <header className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 flex-wrap gap-3">
+                    <div>
+                        <h3 className="fw-bold mb-1 gradient-text">
+                            <i className="bi bi-cpu-fill me-2 text-primary"></i>Smart Campus React Telemetry
+                        </h3>
+                        <p className="text-white-50 small mb-0">
+                            Continuous session attendance logs, multi-assessment charts, and early warning analytics
+                        </p>
+                    </div>
+                    <div className="d-flex align-items-center gap-2 flex-wrap">
+                        {isLive ? (
+                            <span className="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill small">
+                                <i className="bi bi-circle-fill me-1 small"></i> Live Database
+                            </span>
+                        ) : (
+                            <span className="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-2 rounded-pill small">
+                                <i className="bi bi-lightning-charge-fill me-1"></i> Interactive Preview
+                            </span>
+                        )}
+                        <div className="dropdown">
+                            <button className="btn btn-dark border border-secondary rounded-pill px-3 py-1 d-flex align-items-center gap-2 dropdown-toggle text-white" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Switch Theme Palette">
+                                <i className="bi bi-palette2 text-info"></i>
+                                <span className="small fw-semibold">Atmosphere</span>
+                            </button>
+                            <ul className="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary p-2" style={{ minWidth: '220px' }}>
+                                <li className="px-2 py-1 small text-white-50 text-uppercase font-monospace" style={{ fontSize: '0.68rem' }}>Background Theme</li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('sandal')}><span className="theme-swatch-circle swatch-sandal"></span> Light Sandal</div></li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('midnight')}><span className="theme-swatch-circle swatch-midnight"></span> Midnight Indigo</div></li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('sapphire')}><span className="theme-swatch-circle swatch-sapphire"></span> Ocean Sapphire</div></li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('emerald')}><span className="theme-swatch-circle swatch-emerald"></span> Cyber Emerald</div></li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('purple')}><span className="theme-swatch-circle swatch-purple"></span> Cosmic Amethyst</div></li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('sunset')}><span className="theme-swatch-circle swatch-sunset"></span> Ruby Sunset</div></li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('oled')}><span className="theme-swatch-circle swatch-oled"></span> Obsidian Carbon</div></li>
+                                <li><div className="theme-dropdown-item" onClick={() => switchTheme('light')}><span className="theme-swatch-circle swatch-light"></span> Glacier Light</div></li>
+                            </ul>
+                        </div>
+                        <button onClick={goToPortal} className="btn btn-outline-light btn-sm px-3 rounded-pill">
+                            <i className="bi bi-arrow-left me-1"></i> Return to Portal
+                        </button>
+                        <button onClick={loadAnalytics} className="btn btn-primary btn-sm px-3 rounded-pill glow-badge">
+                            <i className="bi bi-arrow-clockwise me-1"></i> Refresh
+                        </button>
+                        <button onClick={handleLogout} className="btn btn-danger btn-sm px-3 rounded-pill">
+                            <i className="bi bi-box-arrow-right me-1"></i> Logout
+                        </button>
+                    </div>
+                </header>
+
+                {/* Risk Standing Alert */}
+                <div className={`glass-card p-4 mb-4 border-start border-5 ${stats.is_at_risk ? 'border-danger' : 'border-success'}`}>
+                    <div className="d-flex align-items-start gap-3">
+                        <div className="p-3 rounded-circle" style={{ background: stats.is_at_risk ? 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
+                            <i className={`bi bi-${stats.is_at_risk ? 'exclamation-triangle-fill' : 'shield-check'} fs-2 text-white`}></i>
+                        </div>
+                        <div className="flex-grow-1">
+                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <h5 className={`fw-bold mb-1 ${stats.is_at_risk ? 'text-danger' : 'text-success'}`}>
+                                    {stats.is_at_risk ? `⚠️ Early Intervention Alert: ${stats.risk_level}` : 'Status: Optimal Good Standing'}
+                                </h5>
+                                <span className="badge bg-primary px-3 py-2 rounded-pill">
+                                    Student: {student.name} ({student.register_no})
+                                </span>
+                            </div>
+                            <div className="row mt-3 g-3">
+                                <div className="col-md-6">
+                                    <div className="p-3 bg-black bg-opacity-30 rounded-3 border border-white border-opacity-10 h-100">
+                                        <h6 className="small fw-bold text-danger mb-2"><i className="bi bi-shield-slash me-2"></i>Risk Factors:</h6>
+                                        <ul className="small text-white-50 mb-0 ps-3">
+                                            {stats.warnings && stats.warnings.length > 0 ? (
+                                                stats.warnings.map((w, idx) => <li key={idx}>{w}</li>)
+                                            ) : (
+                                                <li>All subject attendance &ge; 75% and scores are in safe margins.</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="p-3 bg-black bg-opacity-30 rounded-3 border border-white border-opacity-10 h-100">
+                                        <h6 className="small fw-bold text-warning mb-2"><i className="bi bi-lightbulb me-2"></i>Guidance:</h6>
+                                        <ul className="small text-white-50 mb-0 ps-3">
+                                            {stats.recommendations && stats.recommendations.length > 0 ? (
+                                                stats.recommendations.map((r, idx) => <li key={idx}>{r}</li>)
+                                            ) : (
+                                                <li>Maintain consistent daily attendance and prepare for end-semester assessments.</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4 Summary Stat Cards */}
+                <div className="row g-3 mb-4">
+                    <StatCard 
+                        title="Overall Attendance" 
+                        value={`${stats.overall_attendance}%`} 
+                        icon="calendar-check" 
+                        colorGradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                        subtitle="Threshold: 75%" 
+                        badge={stats.attendance_status}
+                    />
+                    <StatCard 
+                        title="Academic Score" 
+                        value={`${stats.average_marks}%`} 
+                        icon="award" 
+                        colorGradient="linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)"
+                        subtitle={stats.overall_grade} 
+                        badge="Continuous"
+                    />
+                    <StatCard 
+                        title="Course Delivery" 
+                        value={`${stats.completed_course_hours_all} / ${stats.total_course_hours_all}h`} 
+                        icon="clock-history" 
+                        colorGradient="linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)"
+                        subtitle={`${stats.course_progress_percentage}% Completed`} 
+                    />
+                    <StatCard 
+                        title="Top Course" 
+                        value={stats.best_subject.split('(')[0]} 
+                        icon="star-fill" 
+                        colorGradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                        subtitle={`Weak: ${stats.weakest_subject.split('(')[0]}`} 
+                    />
+                </div>
+
+                {/* Interactive Chart Visualizations */}
+                <div className="row g-4">
+                    <div className="col-lg-6">
+                        <div className="glass-card p-4 h-100">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h5 className="fw-bold mb-0 text-white"><i className="bi bi-bar-chart-fill text-primary me-2"></i>Subject Attendance Distribution</h5>
+                                <span className="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-50">Min 75% Target</span>
+                            </div>
+                            <div className="chart-container">
+                                <canvas id="attendanceCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-lg-6">
+                        <div className="glass-card p-4 h-100">
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h5 className="fw-bold mb-0 text-white"><i className="bi bi-layers-fill text-success me-2"></i>Continuous Academic Performance (%)</h5>
+                                <span className="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">Multi-Assessment</span>
+                            </div>
+                            <div className="chart-container">
+                                <canvas id="marksCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
