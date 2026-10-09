@@ -233,27 +233,19 @@
 
         // Smart Navigation Helpers
         const goToPortal = () => {
-            if (window.location.port !== '8000' && window.location.port !== '') {
-                window.location.href = 'http://localhost:8000/frontend/pages/student-dashboard.php';
-            } else {
-                window.location.href = '../frontend/pages/student-dashboard.php';
-            }
+            window.location.href = '../frontend/pages/student-dashboard.php';
         };
 
         const handleLogout = () => {
-            if (window.location.port !== '8000' && window.location.port !== '') {
-                window.location.href = 'http://localhost:8000/backend/auth/logout.php';
-            } else {
-                window.location.href = '../../backend/auth/logout.php';
-            }
+            window.location.href = '../backend/auth/logout.php';
         };
 
         const loadAnalytics = async () => {
             setLoading(true);
             const endpoints = [
-                'http://localhost:8000/backend/student/api_student_data.php',
                 '../backend/student/api_student_data.php',
-                'http://localhost/Smart%20Management%20System/backend/student/api_student_data.php'
+                '/backend/student/api_student_data.php',
+                'http://localhost:8000/backend/student/api_student_data.php'
             ];
 
             let loaded = false;

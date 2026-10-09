@@ -1,4 +1,28 @@
-uploads/
+# Environment & Secrets
 .env
+.env.*
+*.local
+
+# Database temporary backups (version-controlled schema and deployment seed are preserved)
+*.bak
+*.backup
+*.dump
+*.sql.gz
+
+# Logs & temp files
 *.log
+error_log
+
+# Dependencies
 node_modules/
+vendor/
+
+# User Uploads (keep directories, ignore user uploaded contents)
+uploads/assignments/*
+!uploads/assignments/.gitkeep
+uploads/submissions/*
+!uploads/submissions/.gitkeep
+
+# Operating System files
+.DS_Store
+Thumbs.db
