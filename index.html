@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Campus Management System — Cloud Portal</title>
+    <title>Smart Campus Management System — Cloud Gateway</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,7 +37,7 @@
         }
 
         .navbar-custom {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
         }
@@ -89,7 +89,7 @@
             gap: 6px;
             padding: 6px 14px;
             border-radius: 30px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
         }
 
@@ -104,6 +104,12 @@
             color: #e65100;
             border: 1px solid #ffcc80;
         }
+
+        .status-pill.neutral {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
     </style>
 </head>
 <body>
@@ -115,28 +121,33 @@
                 <span class="brand-badge"><i class="bi bi-mortarboard-fill"></i></span>
                 <div>
                     <span class="fw-bold fs-5 d-block text-dark">Smart Campus Management</span>
-                    <span class="text-muted small">Academic Operations &amp; Telemetry Hub</span>
+                    <span class="text-muted small">Academic Operations &amp; Telemetry Gateway</span>
                 </div>
             </a>
             <div class="d-flex align-items-center gap-2">
-                <span id="backendStatusPill" class="status-pill offline">
+                <span id="backendStatusPill" class="status-pill neutral">
                     <i class="bi bi-circle-fill" style="font-size: 8px;"></i>
-                    <span id="backendStatusText">Checking Backend...</span>
+                    <span id="backendStatusText">Checking Server...</span>
                 </span>
             </div>
         </div>
     </nav>
 
-    <!-- Main Container -->
+    <!-- Main Content -->
     <main class="container my-auto py-5">
         <!-- Hero Header -->
         <div class="text-center mb-5">
-            <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-3 py-1.5 rounded-pill mb-3 fw-semibold">
-                <i class="bi bi-cloud-check-fill text-warning me-1"></i> Netlify CDN Deployment
-            </span>
+            <div class="d-inline-flex align-items-center gap-2 mb-3">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold">
+                    <i class="bi bi-check-circle-fill me-1"></i> Netlify Frontend Active
+                </span>
+                <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-3 py-1.5 rounded-pill fw-semibold">
+                    <i class="bi bi-server me-1"></i> PHP/MySQL Backend Server
+                </span>
+            </div>
             <h1 class="fw-bold display-6 mb-3">Enterprise Academic Portal</h1>
-            <p class="text-muted mx-auto" style="max-width: 650px;">
-                Access attendance tracking, multi-assessment marks analytics, timetable scheduling, assignment uploads, and real-time Chart.js telemetry.
+            <p class="text-muted mx-auto" style="max-width: 680px;">
+                Complete academic automation suite for College Faculty, Students, and Administrators. Access attendance tracking, continuous assessments, assignments, and real-time Chart.js telemetry.
             </p>
         </div>
 
@@ -150,9 +161,9 @@
                     <p class="text-muted small flex-grow-1">
                         Track period attendance %, shortage calculator, multi-assessment scores, and submit homework PDFs.
                     </p>
-                    <a href="frontend/pages/student-dashboard.php" class="btn btn-outline-dark btn-sm rounded-pill dynamic-portal-link" data-path="frontend/pages/student-dashboard.php">
+                    <button type="button" onclick="navigateToRole('student')" class="btn btn-outline-dark btn-sm rounded-pill mt-auto">
                         Access Student <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -164,9 +175,9 @@
                     <p class="text-muted small flex-grow-1">
                         Mark daily session attendance, input continuous assessment marks, and post homework attachments.
                     </p>
-                    <a href="frontend/pages/faculty-dashboard.php" class="btn btn-outline-dark btn-sm rounded-pill dynamic-portal-link" data-path="frontend/pages/faculty-dashboard.php">
+                    <button type="button" onclick="navigateToRole('faculty')" class="btn btn-outline-dark btn-sm rounded-pill mt-auto">
                         Access Faculty <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -176,11 +187,11 @@
                     <div class="mb-3 text-danger fs-2"><i class="bi bi-shield-lock-fill"></i></div>
                     <h5 class="fw-bold mb-2">Admin Portal</h5>
                     <p class="text-muted small flex-grow-1">
-                        Manage 64 enrolled faculty &amp; students, allocate curriculum subjects, and view departmental reports.
+                        Manage 64 enrolled faculty &amp; students, allocate curriculum subjects, and generate institutional reports.
                     </p>
-                    <a href="frontend/pages/admin-dashboard.php" class="btn btn-outline-dark btn-sm rounded-pill dynamic-portal-link" data-path="frontend/pages/admin-dashboard.php">
+                    <button type="button" onclick="navigateToRole('admin')" class="btn btn-outline-dark btn-sm rounded-pill mt-auto">
                         Access Admin <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -192,7 +203,7 @@
                     <p class="text-muted small flex-grow-1">
                         Interactive client-side Chart.js telemetry engine with live attendance distribution and score trends.
                     </p>
-                    <a href="react-dashboard/index.html" class="btn btn-gradient btn-sm rounded-pill">
+                    <a href="react-dashboard/index.html" class="btn btn-gradient btn-sm rounded-pill mt-auto">
                         Launch Engine <i class="bi bi-speedometer2 ms-1"></i>
                     </a>
                 </div>
@@ -205,123 +216,161 @@
                 <div class="portal-card p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                         <h6 class="fw-bold mb-0 text-dark">
-                            <i class="bi bi-hdd-network-fill me-2 text-primary"></i>PHP &amp; MySQL Backend Connection
+                            <i class="bi bi-hdd-network-fill me-2 text-primary"></i>PHP &amp; MySQL Application Server Link
                         </h6>
-                        <span class="badge bg-light text-dark border font-monospace small">Client-side API Router</span>
+                        <span class="badge bg-light text-dark border font-monospace small">Dedicated Session Host</span>
                     </div>
                     <p class="text-muted small mb-3">
-                        Netlify hosts the static assets and client-side dashboards. Enter your hosted PHP/MySQL backend URL (e.g., your InfinityFree or Railway domain) or leave empty for local development:
+                        Authentication and database operations require a live PHP server (e.g. InfinityFree or local XAMPP). Enter your hosted PHP URL below, or click <strong>Sign In</strong> to open the portal:
                     </p>
                     <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text bg-light text-muted"><i class="bi bi-link-45deg"></i></span>
                         <input type="url" id="backendUrlInput" class="form-control" placeholder="e.g. http://smartcampus-aakash.freedev.app or http://localhost:8000">
-                        <button class="btn btn-outline-secondary px-3" type="button" onclick="testAndSaveBackend()">
-                            <i class="bi bi-arrow-repeat me-1"></i> Test &amp; Save
+                        <button class="btn btn-outline-secondary px-3" type="button" onclick="saveAndTestBackend()">
+                            <i class="bi bi-save me-1"></i> Save Server URL
                         </button>
                     </div>
                     <div id="connectionFeedback" class="small text-muted mb-2"></div>
-                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                        <span class="small text-muted">Primary Authentication Entry Point:</span>
-                        <a href="frontend/pages/login.php" id="primaryLoginBtn" class="btn btn-sm btn-dark rounded-pill px-3 dynamic-portal-link" data-path="frontend/pages/login.php">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
-                        </a>
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top flex-wrap gap-2">
+                        <span class="small text-muted">Primary Authentication Portal:</span>
+                        <button type="button" onclick="navigateToRole('')" class="btn btn-sm btn-dark rounded-pill px-4">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Open Login Portal
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Modal: Backend Connection Instructions -->
+    <div class="modal fade" id="backendConfigModal" tabindex="-1" aria-labelledby="backendConfigModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: 1px solid var(--border-color);">
+                <div class="modal-header border-bottom">
+                    <h6 class="modal-title fw-bold" id="backendConfigModalLabel">
+                        <i class="bi bi-server text-warning me-2"></i>Live PHP Server Required
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="small text-muted mb-3">
+                        You are viewing the static launchpad hosted on Netlify. Netlify does not execute PHP scripts or MySQL queries. To log in and use attendance, marks, and assignments:
+                    </p>
+                    <ol class="small text-muted ps-3 mb-3">
+                        <li class="mb-2"><strong>If using InfinityFree</strong>: Upload the project files to your <code>/htdocs</code> folder and enter your domain below (<code>http://smartcampus-aakash.freedev.app</code>).</li>
+                        <li><strong>If testing locally</strong>: Start MySQL and Apache in XAMPP and use <code>http://localhost:8000</code>.</li>
+                    </ol>
+                    <label class="form-label small fw-bold text-dark">Enter your live PHP server URL:</label>
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text bg-light"><i class="bi bi-globe"></i></span>
+                        <input type="url" id="modalBackendInput" class="form-control" placeholder="http://smartcampus-aakash.freedev.app">
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-2">
+                    <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" onclick="saveFromModalAndLaunch()">Save &amp; Open Portal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="text-center py-4 text-muted small border-top" style="background: rgba(255,255,255,0.6);">
         <div class="container">
-            <span>Smart Campus Management System &bull; Frontend CDN on Netlify &bull; PHP/MySQL Runtime Compatible</span>
+            <span>Smart Campus Management System &bull; Netlify CDN Gateway &bull; PHP/MySQL Runtime Compatible</span>
         </div>
     </footer>
 
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <!-- Logic Script -->
     <script>
-        const DEFAULT_LOCAL = 'http://localhost:8000';
-        const DEFAULT_HOSTED = 'http://smartcampus-aakash.freedev.app';
+        const DEFAULT_INFINITYFREE = 'http://smartcampus-aakash.freedev.app';
+        let targetRoleToLaunch = '';
 
-        // Load saved backend URL
-        function getBackendUrl() {
-            return localStorage.getItem('smart_campus_backend_url') || '';
+        function getSavedBackend() {
+            return (localStorage.getItem('smart_campus_backend_url') || '').trim().replace(/\/+$/, '');
         }
 
-        function updatePortalLinks(baseUrl) {
-            const cleanBase = baseUrl.trim().replace(/\/+$/, '');
-            document.querySelectorAll('.dynamic-portal-link').forEach(link => {
-                const relPath = link.getAttribute('data-path');
-                if (cleanBase) {
-                    link.href = `${cleanBase}/${relPath}`;
-                } else {
-                    link.href = relPath;
-                }
-            });
+        function isNetlifyHost() {
+            return window.location.hostname.includes('netlify.app');
         }
 
-        async function pingBackend(url) {
-            if (!url) return false;
-            try {
-                const target = `${url.replace(/\/+$/, '')}/backend/student/api_student_data.php`;
-                const res = await fetch(target, { method: 'GET', cache: 'no-cache', mode: 'cors' });
-                return res.ok || res.status === 401 || res.status === 200;
-            } catch (e) {
-                // Return true if network reachable or CORS triggered
-                return false;
-            }
-        }
+        function navigateToRole(role) {
+            targetRoleToLaunch = role;
+            const backend = getSavedBackend();
+            const roleParam = role ? `?role=${role}` : '';
 
-        async function testAndSaveBackend() {
-            const input = document.getElementById('backendUrlInput').value.trim();
-            const feedback = document.getElementById('connectionFeedback');
-            const pill = document.getElementById('backendStatusPill');
-            const pillText = document.getElementById('backendStatusText');
-
-            feedback.innerHTML = '<span class="text-info"><i class="bi bi-hourglass-split me-1"></i> Testing backend connection...</span>';
-
-            if (!input) {
-                localStorage.removeItem('smart_campus_backend_url');
-                updatePortalLinks('');
-                feedback.innerHTML = '<span class="text-muted"><i class="bi bi-info-circle me-1"></i> Cleared custom backend URL. Using relative local paths.</span>';
-                pill.className = 'status-pill offline';
-                pillText.textContent = 'Local / Relative Mode';
+            // If running on local server or direct Apache hosting
+            if (!isNetlifyHost()) {
+                window.location.href = `frontend/pages/login.php${roleParam}`;
                 return;
             }
 
-            const cleanUrl = input.replace(/\/+$/, '');
-            localStorage.setItem('smart_campus_backend_url', cleanUrl);
-            updatePortalLinks(cleanUrl);
-
-            feedback.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Saved backend URL: <code>${cleanUrl}</code>. All portal buttons now route through this host.</span>`;
-            pill.className = 'status-pill online';
-            pillText.textContent = 'Backend Configured';
+            // On Netlify: check if backend is configured
+            if (backend) {
+                window.location.href = `${backend}/frontend/pages/login.php${roleParam}`;
+            } else {
+                // Show friendly configuration modal
+                const modalInput = document.getElementById('modalBackendInput');
+                modalInput.value = DEFAULT_INFINITYFREE;
+                const modal = new bootstrap.Modal(document.getElementById('backendConfigModal'));
+                modal.show();
+            }
         }
 
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', () => {
-            const saved = getBackendUrl();
-            const input = document.getElementById('backendUrlInput');
+        function saveFromModalAndLaunch() {
+            const inputVal = document.getElementById('modalBackendInput').value.trim().replace(/\/+$/, '');
+            if (inputVal) {
+                localStorage.setItem('smart_campus_backend_url', inputVal);
+                document.getElementById('backendUrlInput').value = inputVal;
+                updateStatusBadge(true, 'Server Connected');
+            }
+            const modalEl = document.getElementById('backendConfigModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            const roleParam = targetRoleToLaunch ? `?role=${targetRoleToLaunch}` : '';
+            const destination = inputVal || DEFAULT_INFINITYFREE;
+            window.location.href = `${destination}/frontend/pages/login.php${roleParam}`;
+        }
+
+        function saveAndTestBackend() {
+            const val = document.getElementById('backendUrlInput').value.trim().replace(/\/+$/, '');
+            const feedback = document.getElementById('connectionFeedback');
+
+            if (!val) {
+                localStorage.removeItem('smart_campus_backend_url');
+                feedback.innerHTML = '<span class="text-muted"><i class="bi bi-info-circle me-1"></i> Cleared backend URL. Using relative paths.</span>';
+                updateStatusBadge(false, 'Local / Relative Mode');
+                return;
+            }
+
+            localStorage.setItem('smart_campus_backend_url', val);
+            feedback.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Saved: <code>${val}</code>. All portal logins route to this server.</span>`;
+            updateStatusBadge(true, 'Server Configured');
+        }
+
+        function updateStatusBadge(isOnline, text) {
             const pill = document.getElementById('backendStatusPill');
             const pillText = document.getElementById('backendStatusText');
+            pill.className = `status-pill ${isOnline ? 'online' : 'offline'}`;
+            pillText.textContent = text;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = getSavedBackend();
+            const input = document.getElementById('backendUrlInput');
 
             if (saved) {
                 input.value = saved;
-                updatePortalLinks(saved);
-                pill.className = 'status-pill online';
-                pillText.textContent = 'Backend Configured';
+                updateStatusBadge(true, 'Server Configured');
+            } else if (isNetlifyHost()) {
+                input.value = DEFAULT_INFINITYFREE;
+                updateStatusBadge(false, 'Upload to InfinityFree Needed');
             } else {
-                // If on Netlify, suggest the InfinityFree domain
-                if (window.location.hostname.includes('netlify.app')) {
-                    input.value = DEFAULT_HOSTED;
-                    localStorage.setItem('smart_campus_backend_url', DEFAULT_HOSTED);
-                    updatePortalLinks(DEFAULT_HOSTED);
-                    pill.className = 'status-pill online';
-                    pillText.textContent = 'InfinityFree Connected';
-                } else {
-                    pill.className = 'status-pill offline';
-                    pillText.textContent = 'Local Mode';
-                }
+                updateStatusBadge(true, 'Local Server Active');
             }
         });
     </script>

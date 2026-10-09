@@ -362,6 +362,17 @@
             loginBtn.disabled = false;
         }
     });
+
+    // Auto-select role if specified in URL query (e.g. ?role=student, ?role=faculty, ?role=admin)
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetRole = urlParams.get('role');
+    if (targetRole === 'student') {
+        selectRole('student', 'aakashcampus@gmail.com', 'Aakash@001');
+    } else if (targetRole === 'faculty') {
+        selectRole('faculty', 'aruncampus@gmail.com', 'Faculty@FAC001');
+    } else if (targetRole === 'admin') {
+        selectRole('admin', 'admincampus@gmail.com', 'Admin@Campus2026');
+    }
 </script>
 </body>
 </html>
