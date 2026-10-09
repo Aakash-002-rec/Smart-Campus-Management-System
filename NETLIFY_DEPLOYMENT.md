@@ -1,77 +1,136 @@
-# Netlify Deployment & Architecture Guide
+# Netlify Frontend Deployment Guide
 
-## 1. Why Did the Deployed Site Return a 404 on Netlify?
-
-Your original deployment on `https://elaborate-babka-a84a5c.netlify.app/` showed a **Page not found (404)** error because:
-1. **Netlify is a static Jamstack host** — it serves HTML, CSS, JavaScript, and client-side web apps. It does not execute PHP scripts or run a MySQL server.
-2. Netlify's deployment engine looks for an **`index.html`** file in the root directory by default.
-3. Your repository previously contained only **`index.php`** at the root. Because no `index.html` was found, Netlify had no entry point to serve and returned a 404.
+This guide provides the complete documentation and exact deployment instructions for the **Smart Campus Management System** on **Netlify** (`https://elaborate-babka-a84a5c.netlify.app/`).
 
 ---
 
-## 2. The Solution Implemented
+## 1. Deployment Overview & Architecture
 
-To resolve the 404 while preserving all PHP backend functionality:
-1. **Created Root `index.html`**:
-   - Acts as the primary Netlify entry point.
-   - Provides a portal landing page with direct routing to Student, Faculty, Admin, and React Analytics.
-   - Includes a **Backend Connection Settings** panel where you can specify your live PHP backend URL (e.g., your future cloud host or `http://localhost:8000` for local testing).
-2. **Created `netlify.toml`**:
-   - Sets `publish = "."` (publish directory is the repository root).
-   - Configures required security and MIME type headers for JavaScript and CSS.
-3. **Preserved Local XAMPP & Apache with `DirectoryIndex`**:
-   - In `.htaccess`, added `DirectoryIndex index.php index.html`.
-   - On Apache (XAMPP & PHP web servers), `index.php` is prioritized, redirecting to the login portal.
-   - On Netlify (which has no PHP), `index.html` is served, eliminating the 404.
-4. **Enhanced React Dashboard (`react-dashboard/index.html`)**:
-   - Added dynamic backend routing so it can fetch telemetry data from your hosted PHP backend or display rich fallback data.
+The Smart Campus Management System is configured to deploy its frontend on Netlify while preserving the complete PHP/MySQL codebase for local execution in XAMPP.
 
----
-
-## 3. How the Hybrid Architecture Works
-
-| Component | Hosted On | What It Does |
+| Component | Platform / Host | What It Does |
 | :--- | :--- | :--- |
-| **Static Portal & Telemetry** | **Netlify** (`elaborate-babka-a84a5c.netlify.app`) | Serves the homepage, navigation cards, and the interactive React & Chart.js analytics engine. |
-| **PHP Backend & MySQL** | **PHP Cloud Server** / **Local XAMPP** | Executes authentication, sessions, attendance recording, marks submission, database queries, and file uploads. |
+| **Static Gateway Homepage** | **Netlify CDN** | High-performance, responsive academic gateway (`index.html`) with role navigation and deployment status. |
+| **React Telemetry Engine** | **Netlify CDN** | Interactive client-side React 18 & Chart.js analytics engine (`react-dashboard/index.html`) with multi-assessment charts, early warning alerts, and theme switcher. |
+| **Static UI Assets** | **Netlify CDN** | Bootstrap 5, Bootstrap Icons, Google Fonts, and custom CSS styling served directly from CDN and static files. |
+| **PHP/MySQL Backend** | **Local XAMPP** (`http://localhost:8000`) | Complete server-side authentication, session state, attendance marking, continuous assessment marks entry, assignment uploads, and database operations. |
 
 ---
 
-## 4. Netlify Dashboard Settings
+## 2. Why Netlify is Frontend-Only
 
-When you push this repository to GitHub, Netlify will automatically detect the changes and rebuild. Verify these settings in your Netlify dashboard:
+1. **Static Jamstack Architecture**: Netlify serves HTML, CSS, client-side JavaScript, and static media via global CDNs. Netlify does not execute PHP scripts or run MySQL database servers.
+2. **Transparent User Experience**: When visitors click any PHP portal button on Netlify (**Student Portal**, **Faculty Portal**, **Admin Portal**, or **Open Login Portal**), the application displays a clear, informative modal:
+   > *"The PHP/MySQL backend is not connected because this deployment only uses Netlify."*
+3. **No Mock or Fake Authentication**: In accordance with system requirements, no fake credentials, mock login handlers, or simulated databases have been introduced. This protects data integrity and ensures the real academic application is not misrepresented.
+4. **Zero Third-Party Hosting Dependencies**: All default external hosting URLs (including InfinityFree) have been completely removed.
 
-1. Open **[app.netlify.com](https://app.netlify.com)** &rarr; Click your site (`elaborate-babka-a84a5c`).
-2. Go to **Site configuration** &rarr; **Build & deploy** &rarr; **Continuous deployment**.
-3. Confirm settings:
+---
+
+## 3. Configuration Files & 404 Prevention
+
+### Root `index.html`
+- Serves as the primary entry point for Netlify.
+- Eliminates the previous "Page not found (404)" error that occurred when Netlify attempted to locate a default HTML file.
+- Automatically detects the host (`isNetlifyHost()`). On Netlify, it presents the backend notice when PHP features are requested. On local XAMPP, it routes seamlessly to `frontend/pages/login.php`.
+
+### `netlify.toml`
+Located in the repository root:
+```toml
+# Netlify Configuration for Smart Campus Management System
+
+[build]
+  # Publish root directory containing index.html, static assets, and react-dashboard
+  publish = "."
+
+# Handle direct requests to .php endpoints on Netlify gracefully
+[[redirects]]
+  from = "/frontend/pages/*"
+  to = "/index.html"
+  status = 302
+
+[[redirects]]
+  from = "/backend/*"
+  to = "/index.html"
+  status = 302
+
+[[redirects]]
+  from = "/*.php"
+  to = "/index.html"
+  status = 302
+
+# Security and MIME Type Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css"
+```
+
+### Local Environment Preservation (`.htaccess`)
+- Preserves `DirectoryIndex index.php index.html`.
+- On Apache / XAMPP, `index.php` is prioritized, redirecting directly to `frontend/pages/login.php`.
+- Local development workflow is 100% intact.
+
+---
+
+## 4. Exact Steps to Deploy on Netlify
+
+### Step 1: Confirm Netlify Site Settings
+1. Open your Netlify account at **[app.netlify.com](https://app.netlify.com)**.
+2. Select your site: `elaborate-babka-a84a5c` (or open [https://elaborate-babka-a84a5c.netlify.app/](https://elaborate-babka-a84a5c.netlify.app/)).
+3. Navigate to **Site configuration** &rarr; **Build & deploy** &rarr; **Continuous deployment**.
+4. Verify the following parameters:
    - **Repository**: `Aakash-002-rec/Smart-Campus-Management-System`
    - **Branch to deploy**: `master`
    - **Base directory**: *(leave empty)*
    - **Build command**: *(leave empty)*
-   - **Publish directory**: `.` *(or leave empty, as `netlify.toml` sets this automatically)*
-4. Click **Trigger deploy** &rarr; **Deploy site**.
+   - **Publish directory**: `.` *(the dot indicates the repository root containing `index.html`)*
+
+### Step 2: Trigger Deployment
+- If connected via GitHub automatic deployments, pushing the changes to branch `master` will trigger an automatic deployment.
+- Alternatively, trigger manually from the Netlify dashboard:
+  - Go to **Deploys** tab &rarr; Click **Trigger deploy** &rarr; Select **Deploy site**.
+
+### Step 3: Verify the Live Deployment
+1. Visit **`https://elaborate-babka-a84a5c.netlify.app/`**:
+   - The homepage should load instantly with the sandalwood theme, header, and portal cards.
+   - The status badge at top right displays `Netlify Frontend (No PHP)`.
+2. Click **Access Student**, **Access Faculty**, or **Access Admin**:
+   - A modal will open displaying:
+     > *"The PHP/MySQL backend is not connected because this deployment only uses Netlify."*
+3. Click **Launch Engine** or **Open React Telemetry**:
+   - Loads `https://elaborate-babka-a84a5c.netlify.app/react-dashboard/index.html`.
+   - Chart.js attendance charts and assessment marks display smoothly in client-side preview mode.
+   - Clicking **Gateway Home** returns to `index.html`.
+   - Clicking **PHP Portal** or **Logout** displays the backend notice modal.
 
 ---
 
-## 5. Connecting Netlify to Your Hosted PHP Backend
+## 5. Local XAMPP Verification (Full Application)
 
-Once your Netlify site loads:
-1. Open `https://elaborate-babka-a84a5c.netlify.app/`.
-2. In the **PHP & MySQL Application Server Link** panel at the bottom:
-   - Enter your hosted PHP URL (for example: `https://your-php-server.com` or `http://localhost:8000`).
-   - Click **Save Server URL**.
-3. All portal buttons (**Access Student**, **Access Faculty**, **Access Admin**, **Open Login Portal**) will route to your live PHP host.
+To run the complete full-stack application with live authentication and MySQL queries:
+1. Open **XAMPP Control Panel** and start **Apache** and **MySQL**.
+2. Run `.\run_server.bat` or navigate to:
+   ```
+   http://localhost:8000
+   ```
+3. The server prioritizes `index.php` and loads the live login portal (`frontend/pages/login.php`).
+4. Log in using your registered credentials (e.g., student register number or faculty email).
 
 ---
 
-## 6. Feature Availability Matrix
-
-| Feature | Supported on Netlify Alone? | Requires PHP Backend Host? |
-| :--- | :---: | :---: |
-| Homepage & Portal Navigation |  Yes | No |
-| React & Chart.js Telemetry Engine |  Yes (Client-Side) | Optional (Live data when backend connected) |
-| User Login & Role Authorization | ❌ No |  Yes (`backend/auth/login_process.php`) |
-| Attendance Session Marking | ❌ No |  Yes (`backend/faculty/save_session_attendance.php`) |
-| Assessment Marks Entry | ❌ No |  Yes (`backend/faculty/save_student_marks.php`) |
-| Assignment File Uploads / Downloads | ❌ No |  Yes (`uploads/` directory on PHP host) |
-| Student Records & Subject Enrollment | ❌ No |  Yes (`backend/admin/` + MySQL) |
+## 6. Summary of Safeguards
+- **Zero Secrets**: No database passwords, API tokens, or server credentials are in the repository.
+- **`db_credentials.php` Excluded**: Ignored by `.gitignore` to protect local credentials.
+- **No Third-Party Hosting Dependencies**: Netlify serves the static layer cleanly, and XAMPP runs the full stack locally.

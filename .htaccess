@@ -1,11 +1,11 @@
 # Smart Campus Management System - Root .htaccess Configuration
 
-# Prioritize index.php for Apache environments (XAMPP & InfinityFree)
+# Prioritize index.php for Apache environments (XAMPP & PHP web servers)
 <IfModule mod_dir.c>
     DirectoryIndex index.php index.html
 </IfModule>
 
-# Disable Directory Browsing (safe for InfinityFree shared hosting)
+# Disable Directory Browsing
 <IfModule mod_autoindex.c>
     Options -Indexes
 </IfModule>

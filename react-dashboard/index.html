@@ -228,57 +228,57 @@
         const [studentData, setStudentData] = useState(null);
         const [isLive, setIsLive] = useState(false);
         const [loading, setLoading] = useState(true);
+        const [showBackendNotice, setShowBackendNotice] = useState(false);
         const attChartRef = useRef(null);
         const marksChartRef = useRef(null);
 
-        // Smart Navigation Helpers
-        const getBackendBase = () => {
-            return (localStorage.getItem('smart_campus_backend_url') || '').trim().replace(/\/+$/, '');
+        const isNetlifyHost = () => {
+            return window.location.hostname.includes('netlify.app');
         };
 
         const goToPortal = () => {
-            const base = getBackendBase();
-            if (base) {
-                window.location.href = `${base}/frontend/pages/student-dashboard.php`;
-            } else {
-                window.location.href = '../frontend/pages/student-dashboard.php';
+            if (isNetlifyHost()) {
+                setShowBackendNotice(true);
+                return;
             }
+            window.location.href = '../frontend/pages/student-dashboard.php';
         };
 
         const handleLogout = () => {
-            const base = getBackendBase();
-            if (base) {
-                window.location.href = `${base}/backend/auth/logout.php`;
-            } else {
-                window.location.href = '../backend/auth/logout.php';
+            if (isNetlifyHost()) {
+                setShowBackendNotice(true);
+                return;
             }
+            window.location.href = '../backend/auth/logout.php';
         };
 
         const loadAnalytics = async () => {
             setLoading(true);
-            const base = getBackendBase();
-            const endpoints = [
-                base ? `${base}/backend/student/api_student_data.php` : null,
-                '../backend/student/api_student_data.php',
-                '/backend/student/api_student_data.php',
-                'http://localhost:8000/backend/student/api_student_data.php'
-            ].filter(Boolean);
+            try {
+                localStorage.removeItem('smart_campus_backend_url');
+            } catch(e) {}
 
             let loaded = false;
-            for (const url of endpoints) {
-                try {
-                    const res = await fetch(url, { cache: 'no-cache' });
-                    if (res.ok) {
-                        const result = await res.json();
-                        if (result.status === 'success' && result.data && result.data.student) {
-                            setStudentData(result.data);
-                            setIsLive(true);
-                            loaded = true;
-                            break;
+            // Only attempt backend fetch if running on local environment
+            if (!isNetlifyHost()) {
+                const endpoints = [
+                    '../backend/student/api_student_data.php',
+                    '/backend/student/api_student_data.php',
+                    'http://localhost:8000/backend/student/api_student_data.php'
+                ];
+                for (const url of endpoints) {
+                    try {
+                        const res = await fetch(url, { cache: 'no-cache' });
+                        if (res.ok) {
+                            const result = await res.json();
+                            if (result.status === 'success' && result.data && result.data.student) {
+                                setStudentData(result.data);
+                                setIsLive(true);
+                                loaded = true;
+                                break;
+                            }
                         }
-                    }
-                } catch (e) {
-                    // Try next endpoint
+                    } catch (e) {}
                 }
             }
 
@@ -447,8 +447,8 @@
                                 <i className="bi bi-circle-fill me-1 small"></i> Live Database
                             </span>
                         ) : (
-                            <span className="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-2 rounded-pill small">
-                                <i className="bi bi-lightning-charge-fill me-1"></i> Interactive Preview
+                            <span className="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary px-3 py-2 rounded-pill small">
+                                <i className="bi bi-cpu me-1"></i> Client Telemetry Preview
                             </span>
                         )}
                         <div className="dropdown">
@@ -468,8 +468,11 @@
                                 <li><div className="theme-dropdown-item" onClick={() => switchTheme('light')}><span className="theme-swatch-circle swatch-light"></span> Glacier Light</div></li>
                             </ul>
                         </div>
+                        <a href="../index.html" className="btn btn-outline-light btn-sm px-3 rounded-pill">
+                            <i className="bi bi-house me-1"></i> Gateway Home
+                        </a>
                         <button onClick={goToPortal} className="btn btn-outline-light btn-sm px-3 rounded-pill">
-                            <i className="bi bi-arrow-left me-1"></i> Return to Portal
+                            <i className="bi bi-person-badge me-1"></i> PHP Portal
                         </button>
                         <button onClick={loadAnalytics} className="btn btn-primary btn-sm px-3 rounded-pill glow-badge">
                             <i className="bi bi-arrow-clockwise me-1"></i> Refresh
@@ -584,6 +587,47 @@
                         </div>
                     </div>
                 </div>
+
+                {/* Netlify Notice Modal */}
+                {showBackendNotice && (
+                    <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 1055 }}>
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content" style={{ borderRadius: '20px', background: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-card)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+                                <div className="modal-header border-bottom border-secondary border-opacity-25 py-3">
+                                    <h6 className="modal-title fw-bold d-flex align-items-center">
+                                        <i className="bi bi-exclamation-circle-fill text-warning fs-5 me-2"></i>Backend Notice
+                                    </h6>
+                                    <button type="button" className="btn-close" onClick={() => setShowBackendNotice(false)} aria-label="Close"></button>
+                                </div>
+                                <div className="modal-body p-4 text-center">
+                                    <div className="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-3">
+                                        <i className="bi bi-hdd-network-slash" style={{ fontSize: '2.2rem' }}></i>
+                                    </div>
+                                    <h5 className="fw-bold mb-2">PHP/MySQL Backend Not Connected</h5>
+                                    <div className="alert alert-warning text-start small mb-3 border-warning border-opacity-50" style={{ borderRadius: '12px', background: 'rgba(245, 158, 11, 0.15)', color: 'var(--text-primary)' }}>
+                                        <i className="bi bi-info-circle-fill text-warning me-1"></i>
+                                        <strong>The PHP/MySQL backend is not connected because this deployment only uses Netlify.</strong>
+                                    </div>
+                                    <p className="small text-secondary text-start mb-3">
+                                        This deployment serves the static React &amp; Chart.js telemetry engine on Netlify CDN. The PHP student portal, live session attendance, marks entry, and MySQL database run in your local XAMPP environment.
+                                    </p>
+                                    <div className="p-3 bg-black bg-opacity-20 rounded-3 text-start small border border-secondary border-opacity-25 mb-2">
+                                        <div className="fw-semibold mb-1"><i className="bi bi-laptop me-1 text-success"></i> Run Full System Locally:</div>
+                                        <div className="text-secondary">Open <code className="text-info">http://localhost:8000</code> in your browser after starting Apache &amp; MySQL in XAMPP.</div>
+                                    </div>
+                                </div>
+                                <div className="modal-footer border-top border-secondary border-opacity-25 py-2.5 d-flex justify-content-between">
+                                    <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setShowBackendNotice(false)}>
+                                        <i className="bi bi-x-lg me-1"></i> Close
+                                    </button>
+                                    <a href="../index.html" className="btn btn-sm btn-primary rounded-pill px-3">
+                                        <i className="bi bi-house me-1"></i> Return to Gateway Home
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }

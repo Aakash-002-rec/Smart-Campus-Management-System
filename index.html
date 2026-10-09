@@ -117,7 +117,7 @@
     <!-- Top Navigation -->
     <nav class="navbar navbar-custom py-3 sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-3 text-dark text-decoration-none" href="#">
+            <a class="navbar-brand d-flex align-items-center gap-3 text-dark text-decoration-none" href="index.html">
                 <span class="brand-badge"><i class="bi bi-mortarboard-fill"></i></span>
                 <div>
                     <span class="fw-bold fs-5 d-block text-dark">Smart Campus Management</span>
@@ -127,7 +127,7 @@
             <div class="d-flex align-items-center gap-2">
                 <span id="backendStatusPill" class="status-pill neutral">
                     <i class="bi bi-circle-fill" style="font-size: 8px;"></i>
-                    <span id="backendStatusText">Checking Server...</span>
+                    <span id="backendStatusText">Checking Deployment...</span>
                 </span>
             </div>
         </div>
@@ -141,8 +141,8 @@
                 <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold">
                     <i class="bi bi-check-circle-fill me-1"></i> Netlify Frontend Active
                 </span>
-                <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-3 py-1.5 rounded-pill fw-semibold">
-                    <i class="bi bi-server me-1"></i> PHP/MySQL Backend Server
+                <span class="badge bg-warning bg-opacity-15 text-dark border border-warning px-3 py-1.5 rounded-pill fw-semibold">
+                    <i class="bi bi-info-circle-fill text-warning me-1"></i> PHP/MySQL Backend Not Connected
                 </span>
             </div>
             <h1 class="fw-bold display-6 mb-3">Enterprise Academic Portal</h1>
@@ -210,65 +210,82 @@
             </div>
         </div>
 
-        <!-- Backend Configuration & Architecture Panel -->
+        <!-- Deployment Status & Architecture Panel -->
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="portal-card p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                         <h6 class="fw-bold mb-0 text-dark">
-                            <i class="bi bi-hdd-network-fill me-2 text-primary"></i>PHP &amp; MySQL Application Server Link
+                            <i class="bi bi-diagram-3-fill me-2 text-primary"></i>Deployment Architecture: Netlify Frontend Only
                         </h6>
-                        <span class="badge bg-light text-dark border font-monospace small">Dedicated Session Host</span>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 small">
+                            <i class="bi bi-cloud-check me-1"></i>Netlify Static Gateway
+                        </span>
                     </div>
                     <p class="text-muted small mb-3">
-                        Authentication and database operations require a live PHP server (e.g. your hosted server or local XAMPP). Enter your hosted PHP URL below, or click <strong>Sign In</strong> to open the portal:
+                        This deployment is configured exclusively for <strong>Netlify</strong>. It serves the high-performance responsive landing interface and the client-side <strong>React &amp; Chart.js Telemetry Engine</strong>. The PHP/MySQL backend is not connected because this deployment only uses Netlify.
                     </p>
-                    <div class="input-group input-group-sm mb-3">
-                        <span class="input-group-text bg-light text-muted"><i class="bi bi-link-45deg"></i></span>
-                        <input type="url" id="backendUrlInput" class="form-control" placeholder="e.g. https://your-backend-server.com or http://localhost:8000">
-                        <button class="btn btn-outline-secondary px-3" type="button" onclick="saveAndTestBackend()">
-                            <i class="bi bi-save me-1"></i> Save Server URL
-                        </button>
+                    <div class="p-3 bg-light rounded-3 border border-secondary border-opacity-10 mb-3 small">
+                        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+                            <span class="text-muted"><i class="bi bi-globe me-1 text-primary"></i> Netlify CDN URL:</span>
+                            <a href="https://elaborate-babka-a84a5c.netlify.app/" target="_blank" class="fw-semibold text-decoration-none text-primary font-monospace">elaborate-babka-a84a5c.netlify.app</a>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+                            <span class="text-muted"><i class="bi bi-server me-1 text-secondary"></i> PHP / MySQL Backend:</span>
+                            <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2.5 py-1">Not Connected (Netlify Only)</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-muted"><i class="bi bi-laptop me-1 text-success"></i> Full Live System (Local):</span>
+                            <span class="text-dark font-monospace">http://localhost:8000 (XAMPP)</span>
+                        </div>
                     </div>
-                    <div id="connectionFeedback" class="small text-muted mb-2"></div>
-                    <div class="d-flex align-items-center justify-content-between pt-3 border-top flex-wrap gap-2">
-                        <span class="small text-muted">Primary Authentication Portal:</span>
-                        <button type="button" onclick="navigateToRole('')" class="btn btn-sm btn-dark rounded-pill px-4">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Open Login Portal
+                    <div class="d-flex align-items-center justify-content-between pt-2 flex-wrap gap-2">
+                        <button type="button" onclick="showBackendNotice()" class="btn btn-sm btn-outline-dark rounded-pill px-3">
+                            <i class="bi bi-info-circle me-1"></i> PHP Portal Status
                         </button>
+                        <a href="react-dashboard/index.html" class="btn btn-sm btn-gradient rounded-pill px-4">
+                            <i class="bi bi-speedometer2 me-1"></i> Launch React Telemetry
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal: Backend Connection Instructions -->
-    <div class="modal fade" id="backendConfigModal" tabindex="-1" aria-labelledby="backendConfigModalLabel" aria-hidden="true">
+    <!-- Modal: PHP/MySQL Backend Notice for Netlify -->
+    <div class="modal fade" id="backendNoticeModal" tabindex="-1" aria-labelledby="backendNoticeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 20px; border: 1px solid var(--border-color);">
-                <div class="modal-header border-bottom">
-                    <h6 class="modal-title fw-bold" id="backendConfigModalLabel">
-                        <i class="bi bi-server text-warning me-2"></i>Live PHP Server Required
+            <div class="modal-content" style="border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                <div class="modal-header border-bottom py-3">
+                    <h6 class="modal-title fw-bold text-dark d-flex align-items-center" id="backendNoticeModalLabel">
+                        <i class="bi bi-exclamation-circle-fill text-warning fs-5 me-2"></i>Backend Notice
                     </h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <p class="small text-muted mb-3">
-                        You are viewing the static launchpad hosted on Netlify. Netlify does not execute PHP scripts or MySQL queries. To log in and access attendance, marks, and assignments:
-                    </p>
-                    <ol class="small text-muted ps-3 mb-3">
-                        <li class="mb-2"><strong>Hosted Backend</strong>: Enter the public URL of your PHP/MySQL application server below.</li>
-                        <li><strong>Local Development</strong>: Start MySQL and Apache in XAMPP and use <code>http://localhost:8000</code>.</li>
-                    </ol>
-                    <label class="form-label small fw-bold text-dark">Enter your live PHP server URL:</label>
-                    <div class="input-group input-group-sm mb-3">
-                        <span class="input-group-text bg-light"><i class="bi bi-globe"></i></span>
-                        <input type="url" id="modalBackendInput" class="form-control" placeholder="https://your-backend-server.com">
+                <div class="modal-body p-4 text-center">
+                    <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-3">
+                        <i class="bi bi-hdd-network-slash" style="font-size: 2.2rem;"></i>
                     </div>
+                    <h5 class="fw-bold mb-2 text-dark">PHP/MySQL Backend Not Connected</h5>
+                    <div class="alert alert-warning text-start small mb-3 border-warning border-opacity-50" style="border-radius: 12px; background: #fffbf0;">
+                        <i class="bi bi-info-circle-fill text-warning me-1"></i>
+                        <strong>The PHP/MySQL backend is not connected because this deployment only uses Netlify.</strong>
+                    </div>
+                    <p class="small text-muted text-start mb-3">
+                        This site is hosted as a static Jamstack frontend on Netlify (<span class="font-monospace text-dark">elaborate-babka-a84a5c.netlify.app</span>). Netlify serves the landing page, UI styling, and the client-side React &amp; Chart.js telemetry engine, but does not execute PHP scripts or connect to a MySQL database.
+                    </p>
+                    <ul class="small text-muted text-start ps-3 mb-3">
+                        <li class="mb-1.5"><strong>No Mock Data</strong>: No fake login or simulated data is used to ensure authentic security and academic record integrity.</li>
+                        <li><strong>To Run Full Application</strong>: Run the project locally in XAMPP on <code class="text-dark bg-light px-1 py-0.5 rounded">http://localhost:8000</code>.</li>
+                    </ul>
                 </div>
-                <div class="modal-footer border-top py-2">
-                    <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" onclick="saveFromModalAndLaunch()">Save &amp; Open Portal</button>
+                <div class="modal-footer border-top py-2.5 d-flex justify-content-between">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i> Close
+                    </button>
+                    <a href="react-dashboard/index.html" class="btn btn-sm btn-gradient rounded-pill px-3">
+                        <i class="bi bi-speedometer2 me-1"></i> Open React Telemetry
+                    </a>
                 </div>
             </div>
         </div>
@@ -277,7 +294,7 @@
     <!-- Footer -->
     <footer class="text-center py-4 text-muted small border-top" style="background: rgba(255,255,255,0.6);">
         <div class="container">
-            <span>Smart Campus Management System &bull; Netlify CDN Gateway &bull; PHP/MySQL Runtime Compatible</span>
+            <span>Smart Campus Management System &bull; Netlify CDN Gateway &bull; Local PHP/MySQL Runtime Compatible</span>
         </div>
     </footer>
 
@@ -286,90 +303,49 @@
 
     <!-- Logic Script -->
     <script>
-        let targetRoleToLaunch = '';
-
-        function getSavedBackend() {
-            return (localStorage.getItem('smart_campus_backend_url') || '').trim().replace(/\/+$/, '');
-        }
-
         function isNetlifyHost() {
             return window.location.hostname.includes('netlify.app');
         }
 
+        function showBackendNotice() {
+            const modalEl = document.getElementById('backendNoticeModal');
+            if (modalEl && window.bootstrap) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            } else {
+                alert('The PHP/MySQL backend is not connected because this deployment only uses Netlify. To run the full system, use local XAMPP at http://localhost:8000.');
+            }
+        }
+
         function navigateToRole(role) {
-            targetRoleToLaunch = role;
-            const backend = getSavedBackend();
             const roleParam = role ? `?role=${role}` : '';
 
-            // If running on local server or direct Apache hosting
-            if (!isNetlifyHost()) {
-                window.location.href = `frontend/pages/login.php${roleParam}`;
+            // If running on Netlify: show the clear required message
+            if (isNetlifyHost()) {
+                showBackendNotice();
                 return;
             }
 
-            // On Netlify: check if backend is configured
-            if (backend) {
-                window.location.href = `${backend}/frontend/pages/login.php${roleParam}`;
-            } else {
-                // Show friendly configuration modal
-                const modalInput = document.getElementById('modalBackendInput');
-                modalInput.value = '';
-                const modal = new bootstrap.Modal(document.getElementById('backendConfigModal'));
-                modal.show();
-            }
-        }
-
-        function saveFromModalAndLaunch() {
-            const inputVal = document.getElementById('modalBackendInput').value.trim().replace(/\/+$/, '');
-            if (inputVal) {
-                localStorage.setItem('smart_campus_backend_url', inputVal);
-                document.getElementById('backendUrlInput').value = inputVal;
-                updateStatusBadge(true, 'Server Connected');
-                
-                const modalEl = document.getElementById('backendConfigModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-
-                const roleParam = targetRoleToLaunch ? `?role=${targetRoleToLaunch}` : '';
-                window.location.href = `${inputVal}/frontend/pages/login.php${roleParam}`;
-            } else {
-                alert('Please enter a valid backend server URL (e.g. http://localhost:8000 or your hosted server URL).');
-            }
-        }
-
-        function saveAndTestBackend() {
-            const val = document.getElementById('backendUrlInput').value.trim().replace(/\/+$/, '');
-            const feedback = document.getElementById('connectionFeedback');
-
-            if (!val) {
-                localStorage.removeItem('smart_campus_backend_url');
-                feedback.innerHTML = '<span class="text-muted"><i class="bi bi-info-circle me-1"></i> Cleared backend URL. Using relative paths.</span>';
-                updateStatusBadge(false, 'Local / Relative Mode');
-                return;
-            }
-
-            localStorage.setItem('smart_campus_backend_url', val);
-            feedback.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Saved: <code>${val}</code>. All portal logins route to this server.</span>`;
-            updateStatusBadge(true, 'Server Configured');
+            // If running on local server (XAMPP localhost) or direct PHP server:
+            window.location.href = `frontend/pages/login.php${roleParam}`;
         }
 
         function updateStatusBadge(isOnline, text) {
             const pill = document.getElementById('backendStatusPill');
             const pillText = document.getElementById('backendStatusText');
-            pill.className = `status-pill ${isOnline ? 'online' : 'offline'}`;
+            if (!pill || !pillText) return;
+            pill.className = `status-pill ${isOnline ? 'online' : 'neutral'}`;
             pillText.textContent = text;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = getSavedBackend();
-            const input = document.getElementById('backendUrlInput');
+            // Clean up any stale backend localStorage item
+            try {
+                localStorage.removeItem('smart_campus_backend_url');
+            } catch(e) {}
 
-            if (saved) {
-                input.value = saved;
-                updateStatusBadge(true, 'Server Configured');
-            } else if (isNetlifyHost()) {
-                input.value = '';
-                updateStatusBadge(false, 'Backend Not Connected');
+            if (isNetlifyHost()) {
+                updateStatusBadge(false, 'Netlify Frontend (No PHP)');
             } else {
                 updateStatusBadge(true, 'Local Server Active');
             }

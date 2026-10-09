@@ -1,8 +1,24 @@
 # Netlify Configuration for Smart Campus Management System
 
 [build]
-  # Publish root directory containing index.html, assets, and react-dashboard
+  # Publish root directory containing index.html, static assets, and react-dashboard
   publish = "."
+
+# Handle direct requests to .php endpoints on Netlify gracefully
+[[redirects]]
+  from = "/frontend/pages/*"
+  to = "/index.html"
+  status = 302
+
+[[redirects]]
+  from = "/backend/*"
+  to = "/index.html"
+  status = 302
+
+[[redirects]]
+  from = "/*.php"
+  to = "/index.html"
+  status = 302
 
 # Security and MIME Type Headers
 [[headers]]
