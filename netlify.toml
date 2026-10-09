@@ -1,0 +1,22 @@
+# Netlify Configuration for Smart Campus Management System
+
+[build]
+  # Publish root directory containing index.html, assets, and react-dashboard
+  publish = "."
+
+# Security and MIME Type Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css"

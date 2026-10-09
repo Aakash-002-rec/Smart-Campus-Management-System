@@ -1,27 +1,61 @@
 <?php
 /**
  * Database Configuration
- * Supports production environment variables (Railway, Render, Koyeb, Docker)
- * and falls back gracefully to local XAMPP MySQL (127.0.0.1 / localhost).
+ * Supports InfinityFree hosted MySQL, private configuration files,
+ * cloud environment variables, and seamless local XAMPP fallback.
  */
 
-// Production Environment Variables with Local XAMPP Fallbacks
-$host = getenv('DB_HOST') ?: getenv('MYSQLHOST') ?: '127.0.0.1';
-$user = getenv('DB_USER') ?: getenv('MYSQLUSER') ?: 'root';
-$password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : (getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : '');
-$database = getenv('DB_NAME') ?: getenv('MYSQLDATABASE') ?: 'smart_campus';
-$port = (int)(getenv('DB_PORT') ?: getenv('MYSQLPORT') ?: 3306);
+// 1. Load private credentials if present
+$credentials_file = __DIR__ . '/db_credentials.php';
+$credentials = file_exists($credentials_file) ? include $credentials_file : [];
 
-// Set mysqli to not throw fatal uncaught exceptions so we can handle errors gracefully
+// 2. Determine environment ('auto', 'local', or 'production')
+$configured_env = $credentials['environment'] ?? 'auto';
+
+if ($configured_env === 'auto') {
+    $server_host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
+    // Strip port if present (e.g. localhost:8000)
+    $clean_host = strtolower(explode(':', $server_host)[0]);
+
+    $is_local = (
+        empty($clean_host) ||
+        $clean_host === 'localhost' ||
+        $clean_host === '127.0.0.1' ||
+        $clean_host === '::1' ||
+        php_sapi_name() === 'cli'
+    );
+    $active_env = $is_local ? 'local' : 'production';
+} else {
+    $active_env = ($configured_env === 'production') ? 'production' : 'local';
+}
+
+// 3. Resolve Database Credentials based on environment
+if ($active_env === 'production') {
+    $host     = getenv('DB_HOST') ?: getenv('MYSQLHOST') ?: ($credentials['production']['host'] ?? 'sql103.infinityfree.com');
+    $port     = (int)(getenv('DB_PORT') ?: getenv('MYSQLPORT') ?: ($credentials['production']['port'] ?? 3306));
+    $user     = getenv('DB_USER') ?: getenv('MYSQLUSER') ?: ($credentials['production']['user'] ?? 'if0_43131018');
+    $database = getenv('DB_NAME') ?: getenv('MYSQLDATABASE') ?: ($credentials['production']['database'] ?? 'if0_43131018_smart_campus');
+    $password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : (getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : ($credentials['production']['password'] ?? ''));
+} else {
+    // Local XAMPP Environment
+    $host     = getenv('LOCAL_DB_HOST') ?: ($credentials['local']['host'] ?? '127.0.0.1');
+    $port     = (int)(getenv('LOCAL_DB_PORT') ?: ($credentials['local']['port'] ?? 3306));
+    $user     = getenv('LOCAL_DB_USER') ?: ($credentials['local']['user'] ?? 'root');
+    $database = getenv('LOCAL_DB_NAME') ?: ($credentials['local']['database'] ?? 'smart_campus');
+    $password = getenv('LOCAL_DB_PASS') !== false ? getenv('LOCAL_DB_PASS') : ($credentials['local']['password'] ?? '');
+}
+
+// 4. Initialize MySQLi Connection
 mysqli_report(MYSQLI_REPORT_OFF);
 
 $conn = @new mysqli($host, $user, $password, $database, $port);
 
-// If 127.0.0.1 failed, attempt localhost fallback (for local Windows XAMPP environments)
+// If local 127.0.0.1 connection failed, attempt localhost fallback (for Windows XAMPP)
 if ($conn->connect_error && ($host === '127.0.0.1' || $host === 'localhost')) {
     $conn = @new mysqli('localhost', $user, $password, $database, $port);
 }
 
+// 5. Connection Error Handling
 if ($conn->connect_error) {
     // Check if this is an API/AJAX request
     $is_api = (
@@ -38,7 +72,7 @@ if ($conn->connect_error) {
         }
         echo json_encode([
             'status' => 'error',
-            'message' => 'Database connection failed. Please verify database server status and configuration.'
+            'message' => 'Database connection failed. Please verify database server credentials.'
         ]);
         exit();
     } else {
@@ -54,15 +88,21 @@ if ($conn->connect_error) {
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
             <style>
                 body { background: #fdfbf7; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-                .card { max-width: 520px; border-radius: 16px; border: 1px solid #e0d7c6; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+                .card { max-width: 540px; border-radius: 16px; border: 1px solid #e0d7c6; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
             </style>
         </head>
         <body>
             <div class="card p-4 text-center">
-                <h4 class="fw-bold text-dark">Database Unavailable</h4>
-                <p class="text-muted small mt-2">Could not connect to the database. In production, check environment variables (<code>MYSQLHOST</code>, <code>MYSQLUSER</code>, <code>MYSQLPASSWORD</code>, <code>MYSQLDATABASE</code>). In local development, ensure MySQL is running in XAMPP.</p>
+                <h4 class="fw-bold text-dark">Database Connection Issue</h4>
+                <p class="text-muted small mt-2">
+                    Could not establish connection to the MySQL database.
+                    <br><br>
+                    <strong>InfinityFree:</strong> Verify host (<code><?php echo htmlspecialchars($host); ?></code>), database (<code><?php echo htmlspecialchars($database); ?></code>), and password in <code>backend/config/db_credentials.php</code>.
+                    <br>
+                    <strong>Local:</strong> Ensure MySQL service is running in XAMPP.
+                </p>
                 <div class="mt-3">
-                    <a href="javascript:location.reload()" class="btn btn-outline-primary btn-sm rounded-pill px-4">Retry</a>
+                    <a href="javascript:location.reload()" class="btn btn-outline-primary btn-sm rounded-pill px-4">Retry Connection</a>
                 </div>
             </div>
         </body>

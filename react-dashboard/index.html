@@ -232,21 +232,37 @@
         const marksChartRef = useRef(null);
 
         // Smart Navigation Helpers
+        const getBackendBase = () => {
+            return (localStorage.getItem('smart_campus_backend_url') || '').trim().replace(/\/+$/, '');
+        };
+
         const goToPortal = () => {
-            window.location.href = '../frontend/pages/student-dashboard.php';
+            const base = getBackendBase();
+            if (base) {
+                window.location.href = `${base}/frontend/pages/student-dashboard.php`;
+            } else {
+                window.location.href = '../frontend/pages/student-dashboard.php';
+            }
         };
 
         const handleLogout = () => {
-            window.location.href = '../backend/auth/logout.php';
+            const base = getBackendBase();
+            if (base) {
+                window.location.href = `${base}/backend/auth/logout.php`;
+            } else {
+                window.location.href = '../backend/auth/logout.php';
+            }
         };
 
         const loadAnalytics = async () => {
             setLoading(true);
+            const base = getBackendBase();
             const endpoints = [
+                base ? `${base}/backend/student/api_student_data.php` : null,
                 '../backend/student/api_student_data.php',
                 '/backend/student/api_student_data.php',
                 'http://localhost:8000/backend/student/api_student_data.php'
-            ];
+            ].filter(Boolean);
 
             let loaded = false;
             for (const url of endpoints) {

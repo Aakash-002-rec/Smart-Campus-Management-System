@@ -1,13 +1,20 @@
 # Smart Campus Management System - Root .htaccess Configuration
 
-# Disable Directory Browsing
-Options -Indexes
+# Prioritize index.php for Apache environments (XAMPP & InfinityFree)
+<IfModule mod_dir.c>
+    DirectoryIndex index.php index.html
+</IfModule>
+
+# Disable Directory Browsing (safe for InfinityFree shared hosting)
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
 
 # UTF-8 Default Charset
 AddDefaultCharset UTF-8
 
-# Protect Sensitive Files and Hidden Files
-<FilesMatch "^\.env|Dockerfile|docker-compose\.yml|\.(sql|bak|backup|log|sh|bat)$">
+# Protect Sensitive Files, Credentials, and Configuration Files
+<FilesMatch "^\.env|Dockerfile|docker-compose\.yml|db_credentials|\.(sql|bak|backup|log|sh|bat)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>

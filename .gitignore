@@ -2,6 +2,7 @@
 .env
 .env.*
 *.local
+backend/config/db_credentials.php
 
 # Database temporary backups (version-controlled schema and deployment seed are preserved)
 *.bak
