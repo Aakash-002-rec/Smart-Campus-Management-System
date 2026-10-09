@@ -1,11 +1,11 @@
 <?php
 /**
  * Database Configuration
- * Supports InfinityFree hosted MySQL, private configuration files,
- * cloud environment variables, and seamless local XAMPP fallback.
+ * Supports production cloud database environment variables, private configuration files,
+ * and seamless local XAMPP fallback.
  */
 
-// 1. Load private credentials if present
+// 1. Load private credentials file if present (excluded from Git)
 $credentials_file = __DIR__ . '/db_credentials.php';
 $credentials = file_exists($credentials_file) ? include $credentials_file : [];
 
@@ -31,10 +31,10 @@ if ($configured_env === 'auto') {
 
 // 3. Resolve Database Credentials based on environment
 if ($active_env === 'production') {
-    $host     = getenv('DB_HOST') ?: getenv('MYSQLHOST') ?: ($credentials['production']['host'] ?? 'sql103.infinityfree.com');
+    $host     = getenv('DB_HOST') ?: getenv('MYSQLHOST') ?: ($credentials['production']['host'] ?? '127.0.0.1');
     $port     = (int)(getenv('DB_PORT') ?: getenv('MYSQLPORT') ?: ($credentials['production']['port'] ?? 3306));
-    $user     = getenv('DB_USER') ?: getenv('MYSQLUSER') ?: ($credentials['production']['user'] ?? 'if0_43131018');
-    $database = getenv('DB_NAME') ?: getenv('MYSQLDATABASE') ?: ($credentials['production']['database'] ?? 'if0_43131018_smart_campus');
+    $user     = getenv('DB_USER') ?: getenv('MYSQLUSER') ?: ($credentials['production']['user'] ?? 'root');
+    $database = getenv('DB_NAME') ?: getenv('MYSQLDATABASE') ?: ($credentials['production']['database'] ?? 'smart_campus');
     $password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : (getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : ($credentials['production']['password'] ?? ''));
 } else {
     // Local XAMPP Environment
@@ -97,7 +97,7 @@ if ($conn->connect_error) {
                 <p class="text-muted small mt-2">
                     Could not establish connection to the MySQL database.
                     <br><br>
-                    <strong>InfinityFree:</strong> Verify host (<code><?php echo htmlspecialchars($host); ?></code>), database (<code><?php echo htmlspecialchars($database); ?></code>), and password in <code>backend/config/db_credentials.php</code>.
+                    <strong>Production:</strong> Verify database host (<code><?php echo htmlspecialchars($host); ?></code>), database name (<code><?php echo htmlspecialchars($database); ?></code>), and credentials via environment variables or <code>backend/config/db_credentials.php</code>.
                     <br>
                     <strong>Local:</strong> Ensure MySQL service is running in XAMPP.
                 </p>

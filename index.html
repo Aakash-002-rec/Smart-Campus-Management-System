@@ -221,11 +221,11 @@
                         <span class="badge bg-light text-dark border font-monospace small">Dedicated Session Host</span>
                     </div>
                     <p class="text-muted small mb-3">
-                        Authentication and database operations require a live PHP server (e.g. InfinityFree or local XAMPP). Enter your hosted PHP URL below, or click <strong>Sign In</strong> to open the portal:
+                        Authentication and database operations require a live PHP server (e.g. your hosted server or local XAMPP). Enter your hosted PHP URL below, or click <strong>Sign In</strong> to open the portal:
                     </p>
                     <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text bg-light text-muted"><i class="bi bi-link-45deg"></i></span>
-                        <input type="url" id="backendUrlInput" class="form-control" placeholder="e.g. http://smartcampus-aakash.freedev.app or http://localhost:8000">
+                        <input type="url" id="backendUrlInput" class="form-control" placeholder="e.g. https://your-backend-server.com or http://localhost:8000">
                         <button class="btn btn-outline-secondary px-3" type="button" onclick="saveAndTestBackend()">
                             <i class="bi bi-save me-1"></i> Save Server URL
                         </button>
@@ -254,16 +254,16 @@
                 </div>
                 <div class="modal-body p-4">
                     <p class="small text-muted mb-3">
-                        You are viewing the static launchpad hosted on Netlify. Netlify does not execute PHP scripts or MySQL queries. To log in and use attendance, marks, and assignments:
+                        You are viewing the static launchpad hosted on Netlify. Netlify does not execute PHP scripts or MySQL queries. To log in and access attendance, marks, and assignments:
                     </p>
                     <ol class="small text-muted ps-3 mb-3">
-                        <li class="mb-2"><strong>If using InfinityFree</strong>: Upload the project files to your <code>/htdocs</code> folder and enter your domain below (<code>http://smartcampus-aakash.freedev.app</code>).</li>
-                        <li><strong>If testing locally</strong>: Start MySQL and Apache in XAMPP and use <code>http://localhost:8000</code>.</li>
+                        <li class="mb-2"><strong>Hosted Backend</strong>: Enter the public URL of your PHP/MySQL application server below.</li>
+                        <li><strong>Local Development</strong>: Start MySQL and Apache in XAMPP and use <code>http://localhost:8000</code>.</li>
                     </ol>
                     <label class="form-label small fw-bold text-dark">Enter your live PHP server URL:</label>
                     <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text bg-light"><i class="bi bi-globe"></i></span>
-                        <input type="url" id="modalBackendInput" class="form-control" placeholder="http://smartcampus-aakash.freedev.app">
+                        <input type="url" id="modalBackendInput" class="form-control" placeholder="https://your-backend-server.com">
                     </div>
                 </div>
                 <div class="modal-footer border-top py-2">
@@ -286,7 +286,6 @@
 
     <!-- Logic Script -->
     <script>
-        const DEFAULT_INFINITYFREE = 'http://smartcampus-aakash.freedev.app';
         let targetRoleToLaunch = '';
 
         function getSavedBackend() {
@@ -314,7 +313,7 @@
             } else {
                 // Show friendly configuration modal
                 const modalInput = document.getElementById('modalBackendInput');
-                modalInput.value = DEFAULT_INFINITYFREE;
+                modalInput.value = '';
                 const modal = new bootstrap.Modal(document.getElementById('backendConfigModal'));
                 modal.show();
             }
@@ -326,14 +325,16 @@
                 localStorage.setItem('smart_campus_backend_url', inputVal);
                 document.getElementById('backendUrlInput').value = inputVal;
                 updateStatusBadge(true, 'Server Connected');
-            }
-            const modalEl = document.getElementById('backendConfigModal');
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) modal.hide();
+                
+                const modalEl = document.getElementById('backendConfigModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
 
-            const roleParam = targetRoleToLaunch ? `?role=${targetRoleToLaunch}` : '';
-            const destination = inputVal || DEFAULT_INFINITYFREE;
-            window.location.href = `${destination}/frontend/pages/login.php${roleParam}`;
+                const roleParam = targetRoleToLaunch ? `?role=${targetRoleToLaunch}` : '';
+                window.location.href = `${inputVal}/frontend/pages/login.php${roleParam}`;
+            } else {
+                alert('Please enter a valid backend server URL (e.g. http://localhost:8000 or your hosted server URL).');
+            }
         }
 
         function saveAndTestBackend() {
@@ -367,8 +368,8 @@
                 input.value = saved;
                 updateStatusBadge(true, 'Server Configured');
             } else if (isNetlifyHost()) {
-                input.value = DEFAULT_INFINITYFREE;
-                updateStatusBadge(false, 'Upload to InfinityFree Needed');
+                input.value = '';
+                updateStatusBadge(false, 'Backend Not Connected');
             } else {
                 updateStatusBadge(true, 'Local Server Active');
             }

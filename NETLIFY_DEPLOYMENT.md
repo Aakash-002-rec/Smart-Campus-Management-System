@@ -15,13 +15,13 @@ To resolve the 404 while preserving all PHP backend functionality:
 1. **Created Root `index.html`**:
    - Acts as the primary Netlify entry point.
    - Provides a portal landing page with direct routing to Student, Faculty, Admin, and React Analytics.
-   - Includes a **Backend Connection Settings** panel where you can specify your live PHP backend URL (e.g., `http://smartcampus-aakash.freedev.app` or `http://localhost:8000`).
+   - Includes a **Backend Connection Settings** panel where you can specify your live PHP backend URL (e.g., your future cloud host or `http://localhost:8000` for local testing).
 2. **Created `netlify.toml`**:
    - Sets `publish = "."` (publish directory is the repository root).
    - Configures required security and MIME type headers for JavaScript and CSS.
 3. **Preserved Local XAMPP & Apache with `DirectoryIndex`**:
    - In `.htaccess`, added `DirectoryIndex index.php index.html`.
-   - On Apache (XAMPP & InfinityFree), `index.php` is prioritized, redirecting to the login portal.
+   - On Apache (XAMPP & PHP web servers), `index.php` is prioritized, redirecting to the login portal.
    - On Netlify (which has no PHP), `index.html` is served, eliminating the 404.
 4. **Enhanced React Dashboard (`react-dashboard/index.html`)**:
    - Added dynamic backend routing so it can fetch telemetry data from your hosted PHP backend or display rich fallback data.
@@ -33,7 +33,7 @@ To resolve the 404 while preserving all PHP backend functionality:
 | Component | Hosted On | What It Does |
 | :--- | :--- | :--- |
 | **Static Portal & Telemetry** | **Netlify** (`elaborate-babka-a84a5c.netlify.app`) | Serves the homepage, navigation cards, and the interactive React & Chart.js analytics engine. |
-| **PHP Backend & MySQL** | **InfinityFree** (`smartcampus-aakash.freedev.app`) or **Railway** or **Local XAMPP** | Executes authentication, sessions, attendance recording, marks submission, database queries, and file uploads. |
+| **PHP Backend & MySQL** | **PHP Cloud Server** / **Local XAMPP** | Executes authentication, sessions, attendance recording, marks submission, database queries, and file uploads. |
 
 ---
 
@@ -57,10 +57,10 @@ When you push this repository to GitHub, Netlify will automatically detect the c
 
 Once your Netlify site loads:
 1. Open `https://elaborate-babka-a84a5c.netlify.app/`.
-2. In the **PHP & MySQL Backend Connection** panel at the bottom:
-   - Enter your hosted PHP URL (for example: `http://smartcampus-aakash.freedev.app`).
-   - Click **Test & Save**.
-3. All portal buttons (**Access Student**, **Access Faculty**, **Access Admin**, **Sign In to Portal**) will now route to your live PHP host.
+2. In the **PHP & MySQL Application Server Link** panel at the bottom:
+   - Enter your hosted PHP URL (for example: `https://your-php-server.com` or `http://localhost:8000`).
+   - Click **Save Server URL**.
+3. All portal buttons (**Access Student**, **Access Faculty**, **Access Admin**, **Open Login Portal**) will route to your live PHP host.
 
 ---
 
@@ -69,7 +69,7 @@ Once your Netlify site loads:
 | Feature | Supported on Netlify Alone? | Requires PHP Backend Host? |
 | :--- | :---: | :---: |
 | Homepage & Portal Navigation |  Yes | No |
-| React & Chart.js Telemetry Engine |  Yes (Demo Mode) | Optional (Live data when backend connected) |
+| React & Chart.js Telemetry Engine |  Yes (Client-Side) | Optional (Live data when backend connected) |
 | User Login & Role Authorization | ❌ No |  Yes (`backend/auth/login_process.php`) |
 | Attendance Session Marking | ❌ No |  Yes (`backend/faculty/save_session_attendance.php`) |
 | Assessment Marks Entry | ❌ No |  Yes (`backend/faculty/save_student_marks.php`) |
